@@ -2,21 +2,25 @@
 
 trap exit ERR
 
+if [ "$1" == "-j" ] ; then
+    parallel=$1
+fi
+
 ### check environment variables
-if [ -z "$AGILE" ] || [ -z $(env | grep AGILE) ] ; then
+if [ -z "$AGILE" ] || [ -z $(env | grep "AGILE=") ] ; then
     echo "AGILE environment variable not set. Abort."
     exit
 fi
-if [ -z "$CFITSIO" ] || [ -z $(env | grep CFITSIO) ] ; then
+if [ -z "$CFITSIO" ] || [ -z $(env | grep "CFITSIO=") ] ; then
     echo "CFITSIO environment variable not set. Abort."
     exit
 fi
-if [ -z "$ROOTSYS" ] || [ -z $(env | grep ROOTSYS) ] ; then
+if [ -z "$ROOTSYS" ] || [ -z $(env | grep "ROOTSYS=") ] ; then
     echo "ROOTSYS environment variable not set. Abort."
     exit
 fi
 
-if [ $1 == "clean" ] ; then
+if [ "$1" == "clean" ] ; then
     cd libagilepil
     make clean
     cd ../libagilewcs
@@ -29,19 +33,19 @@ if [ $1 == "clean" ] ; then
 fi
 
 cd libagilepil
-make install prefix=$AGILE
+make ${parallel} install prefix=$AGILE
 cd ..
 
 cd libagilewcs
-make install prefix=$AGILE
+make ${parallel} install prefix=$AGILE
 cd ..
 
 cd libagilesci
-make install prefix=$AGILE
+make ${parallel} install prefix=$AGILE
 cd ..
 
 cd agilesci1
-make install prefix=$AGILE
+make ${parallel} install prefix=$AGILE
 cd ..
 
 cp profile $AGILE
